@@ -25,7 +25,7 @@ var module = angular.module('lisUiElements', []);
 		  link: function postLink(scope, element, attrs) {
 			var model = attrs.ngModel;
 			attrs.lisOptions = attrs.lisOptions || '{}';
-			var options = _.update({
+			var options = _.defaults({
 				inp: element[0],
 				min: 0,
 				max: 100,
@@ -52,7 +52,7 @@ var module = angular.module('lisUiElements', []);
 		cal = new type(element[0],options);
 		cal.subscribe("change", function(value){
 			// TODO: Range, multiple and multiple calendars
-			scope[model] = value;
+			scope[model] = this.getSelectedAsDates();
 			scope.$digest();
 		});
 	}
