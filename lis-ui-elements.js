@@ -25,7 +25,7 @@ var module = angular.module('lisUiElements', []);
 		  link: function postLink(scope, element, attrs) {
 			var model = attrs.ngModel;
 			attrs.lisOptions = attrs.lisOptions || '{}';
-			var options = _.defaults({
+			var options = _.defaults(JSON.parse(attrs.lisOptions),{
 				inp: element[0],
 				min: 0,
 				max: 100,
@@ -38,7 +38,7 @@ var module = angular.module('lisUiElements', []);
 					}] : []
 				}
 				    
-			},JSON.parse(attrs.lisOptions));
+			});
 			fdSlider.createSlider(options);
 			element.css("display","none");
 		  }
