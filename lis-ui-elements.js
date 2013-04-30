@@ -13,12 +13,12 @@
 /**
  * @ngdoc object
  * @name lisUiElements
- * @requires momentjs, fdSlider, kalendae
+ * @requires momentjs, fdSlider, kalendae, lodash
  *
  */
-var module = angular.module('lisUiElements', []);
+var module = angular.module('lisUiElements', ['ng']);
 	module
-	  .directive('fdSlider', function () {
+	  .directive('fdSlider', function ($parse) {
 		return {
 		  restrict: 'AE',
 		  replace: false,
@@ -33,7 +33,7 @@ var module = angular.module('lisUiElements', []);
 				callbacks: {
 				// TODO: extend change callback array instead of replacing
 					change: model ? [function(obj){
-						scope[model] = obj.value;
+						$parse(model).assign(scope, obj.value);
 						scope.$digest();
 					}] : []
 				}
@@ -45,32 +45,32 @@ var module = angular.module('lisUiElements', []);
 		};
 	  });
 	
-	function makeKalendae( scope, element, attrs, type ) {
+	function makeKalendae( scope, element, attrs, type, $parse ) {
 		attrs.lisOptions = attrs.lisOptions || '{}';
 		var model = attrs.ngModel,
 			options = JSON.parse(attrs.lisOptions),
 		cal = new type(element[0],options);
 		cal.subscribe("change", function(value){
 			// TODO: Range, multiple and multiple calendars
-			scope[model] = this.getSelectedAsDates();
+			$parse(model).assign(scope,this.getSelectedAsDates());
 			scope.$digest();
 		});
 	}
 	  
-	module.directive('kalendae', function() {
+	module.directive('kalendae', function($parse) {
 		return {
 		  restrict: 'EA',
 		  link: function postLink(scope, element, attrs) {
-			makeKalendae(scope, element, attrs, Kalendae);
+			makeKalendae(scope, element, attrs, Kalendae, $parse);
 		  }
 		};
 	});
 	  
-	module.directive('inputKalendae', function() {
+	module.directive('inputKalendae', function($parse) {
 		return {
 		  restrict: 'A',
 		  link: function postLink(scope, element, attrs) {
-			makeKalendae(scope, element, attrs, Kalendae.Input);
+			makeKalendae(scope, element, attrs, Kalendae.Input, $parse);
 		  }
 		};
 	});
