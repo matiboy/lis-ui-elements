@@ -24,11 +24,12 @@ var module = angular.module('lisUiElements', []);
 		  replace: false,
 		  link: function postLink(scope, element, attrs) {
 			var model = attrs.ngModel;
-			fdSlider.createSlider({
+			attrs.lisOptions = attrs.lisOptions || '{}';
+			var options = _.update({
 				inp: element[0],
-				min: attrs.fdSliderMin || 0,
-				max: attrs.fdSliderMax || 100,
-				step: attrs.fdSliderStep || 1,
+				min: 0,
+				max: 100,
+				step: 1,
 				callbacks: {
 				// TODO: extend change callback array instead of replacing
 					change: model ? [function(obj){
@@ -36,7 +37,9 @@ var module = angular.module('lisUiElements', []);
 						scope.$digest();
 					}] : []
 				}
-			});
+				    
+			},JSON.parse(attrs.lisOptions));
+			fdSlider.createSlider(options);
 			element.css("display","none");
 		  }
 		};
