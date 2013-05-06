@@ -49,7 +49,7 @@ var module = angular.module('lisUiElements', ['ng']);
 				step: 1,
 				callbacks: {
 				// TODO: extend change callback array instead of replacing
-					change: model ? [] : []
+					change: changeCallback
 				}
 				    
 			});
