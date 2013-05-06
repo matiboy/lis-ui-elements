@@ -23,8 +23,25 @@ var module = angular.module('lisUiElements', ['ng']);
 		  restrict: 'AE',
 		  replace: false,
 		  link: function postLink(scope, element, attrs) {
-			var model = attrs.ngModel;
+			var model = attrs.ngModel,
+				throttle = attrs.lisThrottle;
+				
 			attrs.lisOptions = attrs.lisOptions || '{}';
+			throttle = throttle ? parseInt( throttle ) : false;
+			
+			var changeCallback;
+			if( model ) {
+				changeCallback = function(obj){
+					$parse(model).assign(scope, obj.value);
+					scope.$digest();
+				}
+				if( throttle ) {
+					changeCallback = _.throttle( changeCallback, throttle );
+				}
+				changeCallback = [changeCallback];
+			} else {
+				changeCallback = [];
+			}
 			var options = _.defaults(JSON.parse(attrs.lisOptions),{
 				inp: element[0],
 				min: 0,
@@ -32,10 +49,7 @@ var module = angular.module('lisUiElements', ['ng']);
 				step: 1,
 				callbacks: {
 				// TODO: extend change callback array instead of replacing
-					change: model ? [function(obj){
-						$parse(model).assign(scope, obj.value);
-						scope.$digest();
-					}] : []
+					change: model ? [] : []
 				}
 				    
 			});
