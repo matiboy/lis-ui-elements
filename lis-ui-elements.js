@@ -42,7 +42,7 @@ var module = angular.module('lisUiElements', ['ng']);
 			} else {
 				changeCallback = [];
 			}
-			var options = _.defaults(JSON.parse(attrs.lisOptions),{
+			var options = _.defaults(angular.fromJson(attrs.lisOptions),{
 				inp: element[0],
 				min: 0,
 				max: 100,
@@ -62,7 +62,7 @@ var module = angular.module('lisUiElements', ['ng']);
 	function makeKalendae( scope, element, attrs, type, $parse ) {
 		attrs.lisOptions = attrs.lisOptions || '{}';
 		var model = attrs.ngModel,
-			options = JSON.parse(attrs.lisOptions),
+			options = angular.fromJson(attrs.lisOptions),
 		cal = new type(element[0],options);
 		cal.subscribe("change", function(value){
 			// TODO: Range, multiple and multiple calendars
