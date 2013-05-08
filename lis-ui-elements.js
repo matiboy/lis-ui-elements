@@ -75,7 +75,7 @@ var module = angular.module('lisUiElements', ['ng']);
 				scope.years = years;
 				scope.$watch('dt', function(nv, ov) {
 					scope.days = _.range(1, nv.daysInMonth()+1);
-				} );
+				}, true );
 				// scope.days = [1,2,3,4,5,6];
 				scope.day = 1;
 				scope.month = "Jan";
@@ -83,12 +83,15 @@ var module = angular.module('lisUiElements', ['ng']);
 				
 				scope.$watch('day',function(nv) {
 					scope.dt.date(nv);
+					scope.$digest();
 				});
 				scope.$watch('month',function(nv) {
 					scope.dt.month(_.indexOf(months,nv));
+					scope.$digest();
 				});
 				scope.$watch('year',function(nv) {
 					scope.dt.year(nv);
+					scope.$digest();
 				});
 				
 				setter(scope.$parent,scope.dt.toDate());
