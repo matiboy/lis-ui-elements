@@ -58,6 +58,43 @@ var module = angular.module('lisUiElements', ['ng']);
 		  }
 		};
 	  });
+	  
+	module.directive( 'dobSelects', function($parse) {
+		return {
+			restrict: 'EA',
+			replace: true,
+			template: '<div><select ng-model="day" ng-options="o as o for o in days"></select><select ng-model="month" ng-options="o as o for o in months"></select><select ng-model="year" ng-options="o as o for o in years"></select></div>',
+			scope: true,
+			link: function postLink( scope, element, attrs ) {
+				scope.dt = moment();
+				var getter = $parse(attrs.ngModel),
+					setter = getter.assign,
+					months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+					years = _.range(1900,parseInt(scope.dt.format('YYYY'))+1);
+				scope.months = months;
+				scope.years = years;
+				scope.$watch('dt', function(nv, ov) {
+					scope.days = _.range(1, nv.daysInMonth()+1);
+				} );
+				// scope.days = [1,2,3,4,5,6];
+				scope.day = 1;
+				scope.month = "Jan";
+				scope.year = parseInt(scope.dt.format('YYYY'));
+				
+				scope.$watch('day',function(nv) {
+					scope.dt.date(nv);
+				});
+				scope.$watch('month',function(nv) {
+					scope.dt.month(_.indexOf(months,nv));
+				});
+				scope.$watch('year',function(nv) {
+					scope.dt.year(nv);
+				});
+				
+				setter(scope.$parent,scope.dt.toDate());
+			}
+		}
+	});
 	
 	function makeKalendae( scope, element, attrs, type, $parse ) {
 		attrs.lisOptions = attrs.lisOptions || '{}';
