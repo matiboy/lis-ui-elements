@@ -58,6 +58,63 @@ var module = angular.module('lisUiElements', ['ng']);
 		  }
 		};
 	  });
+
+	  module.directive('liveFdSlider', function ($parse, $timeout) {
+		return {
+		  restrict: 'AE',
+		  replace: false,
+		  link: function postLink(scope, element, attrs) {
+			var model = attrs.ngModel,
+				throttle = attrs.lisThrottle,
+				showAttr = attrs.showAttr,
+				getter = $parse(model),
+				id = element.attr("id"),
+				created = false;
+
+
+			attrs.lisOptions = attrs.lisOptions || '{}';
+			throttle = throttle ? parseInt( throttle ) : false;
+			
+			var changeCallback;
+			if( model ) {
+				changeCallback = function(obj){
+					getter.assign(scope, obj.value);
+					scope.$digest();
+				}
+				if( throttle ) {
+					changeCallback = _.throttle( changeCallback, throttle );
+				}
+				changeCallback = [changeCallback];
+			} else {
+				changeCallback = [];
+			}
+			var options = _.defaults(angular.fromJson(attrs.lisOptions),{
+				inp: element[0],
+				min: 0,
+				max: 100,
+				step: 1,
+				callbacks: {
+				// TODO: extend change callback array instead of replacing
+					change: changeCallback
+				}
+				    
+			});
+			
+			scope.$watch(showAttr,function(nv,ov){
+				//console.log(getter, getter(scope));
+				// TODO: Horrible Hack!! How to guarantee that the newly created spans will be visilb and hence have a width!?
+				if(nv && !created){
+					$timeout(function(){
+						created = true;
+						fdSlider.createSlider(options)	
+					},200);
+				}	
+			});
+			
+			element.css("display","none");
+		  }
+		};
+	  });
 	  
 	module.directive( 'dobSelects', function($parse) {
 		return {
